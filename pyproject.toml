@@ -1,0 +1,48 @@
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+skip-string-normalization = false
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | build
+  | dist
+  | migrations
+)/
+'''
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+fix = true
+unsafe-fixes = false
+
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes
+  "I",   # isort
+  "B",   # flake8-bugbear
+  "UP",  # pyupgrade
+  "SIM", # simplify
+]
+
+ignore = [
+  "E203", # black compatibility
+  "E266",
+  "E501", # black handles line length
+]
+
+exclude = [
+  ".git",
+  ".venv",
+  "build",
+  "dist",
+  "migrations",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
