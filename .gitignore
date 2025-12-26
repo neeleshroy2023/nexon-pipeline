@@ -1,3 +1,17 @@
 .env
 .venv
 __pycache__
+
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+*.egg-info
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# OS files
+.DS_Store
