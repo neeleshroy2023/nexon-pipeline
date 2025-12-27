@@ -78,9 +78,9 @@ def evaluate(X, y, w, b):
     return accuracy
 
 
-def confusion_matrix(X, y, w, b):
+def confusion_matrix(X, y, w, b, threshold=0.5):
     p = sigmoid(X @ w + b)
-    preds = (p > 0.5).astype(int)
+    preds = (p > threshold).astype(int)
 
     tp = ((preds == 1) & (y == 1)).sum()
     tn = ((preds == 0) & (y == 0)).sum()
@@ -106,8 +106,9 @@ def main() -> None:
     acc = evaluate(x_val, y_val, w, b)
     print("validation accuracy:", acc)
 
-    tp, fp, fn, tn = confusion_matrix(x_val, y_val, w, b)
-    print("TP, FP, FN, TN:", tp, fp, fn, tn)
+    for t in [0.3, 0.5, 0.7]:
+        tp, fp, fn, tn = confusion_matrix(x_val, y_val, w, b, threshold=t)
+        print(f"threshold={t}: TP={tp}, FP={fp}, FN={fn}, TN={tn}")
 
 
 if __name__ == "__main__":
