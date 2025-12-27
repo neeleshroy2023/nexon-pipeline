@@ -96,6 +96,12 @@ def standardize(X):
     return (X - mean) / std
 
 
+def precision_recall(tp, fp, fn):
+    precision = tp / (tp + fp + 1e-9)
+    recall = tp / (tp + fn + 1e-9)
+    return precision, recall
+
+
 def main() -> None:
     df = load_data()
     X, y = preprocess(df)
@@ -108,7 +114,8 @@ def main() -> None:
 
     for t in [0.3, 0.5, 0.7]:
         tp, fp, fn, tn = confusion_matrix(x_val, y_val, w, b, threshold=t)
-        print(f"threshold={t}: TP={tp}, FP={fp}, FN={fn}, TN={tn}")
+        p, r = precision_recall(tp, fp, fn)
+        print(f"threshold={t}: precision={p:.3f}, recall={r:.3f}")
 
 
 if __name__ == "__main__":
