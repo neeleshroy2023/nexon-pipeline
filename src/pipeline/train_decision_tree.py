@@ -49,7 +49,7 @@ def main() -> None:
         X, y, test_size=0.2, random_state=42
     )
 
-    model = DecisionTreeClassifier(max_depth=5, min_samples_leaf=50, random_state=42)
+    model = DecisionTreeClassifier(max_depth=None, min_samples_leaf=50, random_state=42)
 
     model.fit(x_train, y_train)
     preds = model.predict(x_val)
