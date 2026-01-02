@@ -1,27 +1,14 @@
 import os
-from io import BytesIO
 
-import boto3
+import joblib
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import confusion_matrix, recall_score
+from sklearn.metrics import recall_score
 from sklearn.model_selection import train_test_split
 
-load_dotenv()
-
-BUCKET = os.getenv("ML_BUCKET")
-KEY = os.getenv("PARQUET_INPUT_KEY")
-
-
-def load_data() -> pd.DataFrame:
-    s3 = boto3.client("s3")
-    obj = s3.get_object(Bucket=BUCKET, Key=KEY)
-    body = obj["Body"].read()
-
-    df = pd.read_parquet(BytesIO(body))
-    return df
+DATA_DIR = "/opt/ml/input/data/train"
+MODEL_DIR = "/opt/ml/model"
 
 
 def preprocess(df: pd.DataFrame):
@@ -63,7 +50,9 @@ def preprocess(df: pd.DataFrame):
 
 
 def main() -> None:
-    df = load_data()
+    data_path = os.path.join(DATA_DIR, "adult_income.parquet")
+    df = pd.read_parquet(data_path)
+
     X, y = preprocess(df)
 
     x_train, x_val, y_train, y_val = train_test_split(
@@ -76,22 +65,11 @@ def main() -> None:
 
     model.fit(x_train, y_train)
     preds = model.predict(x_val)
-    tn, fp, fn, tp = confusion_matrix(y_val, preds).ravel().tolist()
+    recall = recall_score(y_val, preds)
 
-    print("confusion matrix:")
-    print(f"tn: {tn}")
-    print(f"fp: {fp}")
-    print(f"fn: {fn}")
-    print(f"tp: {tp}")
+    print(f"validation_recall={recall}")
 
-    r = recall_score(y_val, preds, average="weighted")
-    print(r)
-
-    importances = model.feature_importances_
-    for name, score in sorted(
-        zip(df.columns, importances, strict=False), key=lambda x: x[1], reverse=True
-    ):
-        print(f"{name}: {score:.3f}")
+    joblib.dump(model, os.path.join(MODEL_DIR, "model.joblib"))
 
 
 if __name__ == "__main__":
